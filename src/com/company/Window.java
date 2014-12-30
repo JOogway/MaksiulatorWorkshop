@@ -4,6 +4,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Random;
 
 /**
@@ -17,11 +20,15 @@ public class Window extends JFrame implements ActionListener {
     JMenuBar MenuBar;
     JMenu plik, pomoc;
     JMenuItem Choose, Zmodyfikuj, Wyjscie, About_Program;
-    String About = "Program dla Aniutka", tekst;
-    int number;
+    String About = "Program dla Aniutka", tekst = "Tutaj pojawia się przepis";
+    String[] tekstPrzepisu;
+    int number, odpowiedz;
     JTextArea textArea;
+    BufferedReader br;
 
-    public void Window() throws Exception {
+
+
+    public void Window() throws Exception, IOException {
         setSize(610, 440);
         setTitle("Maksiulator");
         setBackground(Color.magenta);
@@ -84,13 +91,14 @@ public class Window extends JFrame implements ActionListener {
         Choose();
         Zmodyfikuj();
         Wyjscie();
-        MenuBar = new JMenuBar();
-        MenuBar.setBounds(0, 0, 510, 10);
         plik = new JMenu("Plik...");
         plik.add(Choose);
         plik.add(Zmodyfikuj);
         plik.addSeparator();
         plik.add(Wyjscie);
+        plik.setVisible(true);
+        MenuBar = new JMenuBar();
+        MenuBar.setBounds(0, 0, 510, 10);
         MenuBar.add(plik);
         MenuBar.add(pomoc);
         MenuBar.setVisible(true);
@@ -148,10 +156,25 @@ public class Window extends JFrame implements ActionListener {
         lShowReaction2.setVisible(true);
     }
 
-    public void TextArea(){
+    /*/public void FileChooser() {
+        JFileChooser s = new JFileChooser();
+        s.setVisible(true);
 
+    }/*/
 
-        textArea = new JTextArea(tekst);
+    public void TextArea() throws IOException {
+        textArea = new JTextArea(10, 40);
+        /*/JFileChooser file = new JFileChooser();
+        textArea.read( new FileReader( file.getAbsolutePath() ), null );
+        BufferedReader br = new BufferedReader(new FileReader(file.getAbsolutePath()));
+        String linia;
+        String tekst = "";
+        while ((linia = br.readLine()) != null) {
+            tekst = tekst+linia+"\n" ;
+        }
+        br.close();
+        tekst = tekst.toUpperCase();/*/
+        textArea.setText(tekst);
         textArea.getDocument();
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
@@ -168,7 +191,8 @@ public class Window extends JFrame implements ActionListener {
         textArea.setEditable(true);
         textArea.setToolTipText("Tutaj wyświetla się przepis");
         textArea.setVisible(true);
-        tekst = "Tekst";
+        textArea.setWrapStyleWord(true);
+        textArea.setText(tekst);
     }
 
     public void Separator() {
@@ -179,17 +203,57 @@ public class Window extends JFrame implements ActionListener {
     public void Fish() {
         Fish = new JButton("Danie rybne");
         Fish.setBounds(10, 320, 155, 20);
+        Fish.setVisible(true);
     }
 
     public void Meat() {
         Meat = new JButton("Danie mięsne");
         Meat.setBounds(175, 320, 155, 20);
+        Meat.setVisible(true);
     }
 
     public void Vege() {
         Vege = new JButton("Danie wegetariańskie");
         Vege.setBounds(350, 320, 155, 20);
+        Vege.setVisible(true);
     }
+
+    public class ReadFile {
+
+        private String path;
+
+    public ReadFile(String file_path) {
+        path = file_path;
+    }
+        int readLines() throws IOException{
+            FileReader file_to_read = new FileReader(path);
+            BufferedReader bf = new BufferedReader(file_to_read);
+
+            String aLine;
+            int NumberOfLines = 0;
+            while ((aLine = bf.readLine())!= null){
+                NumberOfLines++;
+            }
+            bf.close();
+            return NumberOfLines;
+        }
+    public String[] OpenFile() throws IOException{
+        readLines();
+        FileReader fr = new FileReader(path);
+        BufferedReader br = new BufferedReader(fr);
+        int NumberOfLines = 10;
+        String[] textData = new String[NumberOfLines];
+        int i;
+        for (i = 0; i < NumberOfLines; i++) {
+            textData[i] = br.readLine();
+        }
+        br.close();
+        return textData;
+    }
+
+}
+
+
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -206,10 +270,10 @@ public class Window extends JFrame implements ActionListener {
                 number = r.nextInt(10);
 
                 lShowReaction0.setText("Twoja cyferka na dziś to: " + " " + Integer.toString(number));
-
+                buttonActivator.setVisible(false);
                 switch (number) {
                     case 0:
-                        lShowReaction1.setText("Bo tyle będzie dzisiaj zmarwień :*");
+                        lShowReaction1.setText("Bo tyle będzie dzisiaj zmartwień :*");
                         lShowReaction2.setText("Uśmiechnij się Pysiu :*");
                         break;
                     case 1:
@@ -254,7 +318,25 @@ public class Window extends JFrame implements ActionListener {
                 }
             } else if (bSource == About_Program) {
                 tekst = About;
-            }
+            }else if (bSource == buttonActivatorRecipe){
+
+                textArea.setText(tekstPrzepisu.toString());
+                getContentPane().add(Fish);
+                getContentPane().add(Vege);
+                getContentPane().add(Meat);
+                repaint();
+            }/*/else if (bSource == Zmodyfikuj){
+                int odpowiedz = jFileChooserOtworzPlik.showOpenDialog(this);
+                if (odpowiedz == jFileChooserOtworzPlik.APPROVE_OPTION) {
+                    File file = jFileChooserOtworzPlik.getSelectedFile();
+                    try {"dupa dupa dupa, przepisy w trakcie dodawania"
+                        textArea.read( new FileReader( file.getAbsolutePath() ), null );
+                    } catch (IOException e) {
+                        System.out.println("Nie mogę otworzyć pliku: "+file.getAbsolutePath());
+                        System.out.println("Problem: "+e);
+                    }/*/
         }
+
     }
 }
+
