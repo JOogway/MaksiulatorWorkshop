@@ -103,6 +103,7 @@ public class Window extends JFrame implements ActionListener {
         MenuBar.add(plik);
         MenuBar.add(pomoc);
         MenuBar.setVisible(true);
+        
     }
 
     public void About() {
