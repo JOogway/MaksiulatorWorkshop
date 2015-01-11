@@ -48,6 +48,7 @@ public class Window extends JFrame implements ActionListener {
         Vege();
         getContentPane().setLayout(null);
         setLocationRelativeTo(null);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         getContentPane().add(buttonActivator);
         getContentPane().add(buttonExit);
         getContentPane().add(lShowReaction0);
