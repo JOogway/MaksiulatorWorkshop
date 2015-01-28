@@ -321,11 +321,11 @@ public class Window extends JFrame implements ActionListener {
             } else if (bSource == About_Program) {
                 tekst = About;
             }else if (bSource == buttonActivatorRecipe){
-
-                textArea.setText(tekstPrzepisu.toString());
                 getContentPane().add(Fish);
                 getContentPane().add(Vege);
                 getContentPane().add(Meat);
+                repaint();
+                textArea.setText(tekstPrzepisu.toString());
                 repaint();
             }/*/else if (bSource == Zmodyfikuj){
                 int odpowiedz = jFileChooserOtworzPlik.showOpenDialog(this);
