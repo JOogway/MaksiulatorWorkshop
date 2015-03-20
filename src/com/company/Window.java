@@ -4,9 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.Random;
 
 /**
@@ -16,22 +14,23 @@ public class Window extends JFrame implements ActionListener {
     public JSeparator separator;
 
     JButton buttonExit, buttonActivator, buttonActivatorRecipe, Fish, Meat, Vege;
+    JTextField titleField;
     JLabel lShowReaction0, lShowReaction1, lShowReaction2;
     JMenuBar MenuBar;
+    JComboBox foodTypeList;
     JMenu plik, pomoc;
-    JMenuItem Choose, Zmodyfikuj, Wyjscie, About_Program;
-    String About = "Program dla Aniutka", tekst = "Tutaj pojawia się przepis";
-    String[] tekstPrzepisu;
-    int number, odpowiedz;
+    JMenuItem Choose, Zapisz, Wyjscie, About_Program;
+    String About = "Program dla Aniutka", tekst = "Tutaj pojawia się przepis", tytuł;
+    String tekstPrzepisu = "brak", path = "Mięsne";
+    int number, odpowiedz, index = 1;
     JTextArea textArea;
     BufferedReader br;
+    String fs = System.getProperty("file.separator");
 
 
-
-    public void Window() throws Exception, IOException {
+    public void Window() throws Exception {
         setSize(610, 440);
         setTitle("Maksiulator");
-        setBackground(Color.magenta);
         MenuBar();
         Wyjscie();
         About();
@@ -46,9 +45,14 @@ public class Window extends JFrame implements ActionListener {
         Fish();
         Meat();
         Vege();
+        TitleField();
+        ChooseKindField();
         getContentPane().setLayout(null);
         setLocationRelativeTo(null);
+        DirectoryCreator();
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        getContentPane().add(foodTypeList);
+        getContentPane().add(titleField);
         getContentPane().add(buttonActivator);
         getContentPane().add(buttonExit);
         getContentPane().add(lShowReaction0);
@@ -63,10 +67,95 @@ public class Window extends JFrame implements ActionListener {
 
     }
 
-    public void Zmodyfikuj() {
-        Zmodyfikuj = new JMenuItem("Zmodyfikuj", 'Z');
-        Zmodyfikuj.setVisible(true);
-        Zmodyfikuj.addActionListener(this);
+    public void DirectoryCreator() {
+        File theDir0 = new File("Rybne");
+        File theDir1 = new File("Mięsne");
+        File theDir2 = new File("Wegetariańskie");
+        File theDir3 = new File("Deser");
+        File theDir4 = new File("Przystawka");
+
+
+        // if the directory does not exist, create it
+        if (!theDir0.exists()) {
+            System.out.println("creating directory: " + "Rybne");
+            boolean result = false;
+
+            try {
+                theDir0.mkdir();
+                result = true;
+            } catch (SecurityException se) {
+                //handle it
+            }
+            if (result) {
+                System.out.println("DIR created");
+            }
+        }
+
+        if (!theDir1.exists()) {
+            System.out.println("creating directory: " + "Mięsne");
+            boolean result = false;
+
+            try {
+                theDir1.mkdir();
+                result = true;
+            } catch (SecurityException se) {
+                //handle it
+            }
+            if (result) {
+                System.out.println("DIR created");
+            }
+        }
+
+        if (!theDir2.exists()) {
+            System.out.println("creating directory: " + "Wegetariańskie");
+            boolean result = false;
+
+            try {
+                theDir2.mkdir();
+                result = true;
+            } catch (SecurityException se) {
+                //handle it
+            }
+            if (result) {
+                System.out.println("DIR created");
+            }
+        }
+
+        if (!theDir3.exists()) {
+            System.out.println("creating directory: " + "Deser");
+            boolean result = false;
+
+            try {
+                theDir3.mkdir();
+                result = true;
+            } catch (SecurityException se) {
+                //handle it
+            }
+            if (result) {
+                System.out.println("DIR created");
+            }
+        }
+
+        if (!theDir4.exists()) {
+            System.out.println("creating directory: " + "Przystawka");
+            boolean result = false;
+
+            try {
+                theDir4.mkdir();
+                result = true;
+            } catch (SecurityException se) {
+                //handle it
+            }
+            if (result) {
+                System.out.println("DIR created");
+            }
+        }
+    }
+
+    public void Zapisz() {
+        Zapisz = new JMenuItem("Zapisz", 'Z');
+        Zapisz.setVisible(true);
+        Zapisz.addActionListener(this);
     }
 
     public void Wyjscie() {
@@ -90,11 +179,11 @@ public class Window extends JFrame implements ActionListener {
     public void MenuBar() {
         Pomoc();
         Choose();
-        Zmodyfikuj();
+        Zapisz();
         Wyjscie();
         plik = new JMenu("Plik...");
         plik.add(Choose);
-        plik.add(Zmodyfikuj);
+        plik.add(Zapisz);
         plik.addSeparator();
         plik.add(Wyjscie);
         plik.setVisible(true);
@@ -158,43 +247,40 @@ public class Window extends JFrame implements ActionListener {
         lShowReaction2.setVisible(true);
     }
 
-    /*/public void FileChooser() {
-        JFileChooser s = new JFileChooser();
-        s.setVisible(true);
+    public void TitleField() {
+        titleField = new JTextField(tytuł);
+        titleField.setVisible(true);
+        titleField.setBounds(10, 120, 400, 25);
+        titleField.setEditable(true);
+    }
 
-    }/*/
+    public void ChooseKindField() {
 
+        String[] FoodTypesStrings = {"Rybne", "Mięsne", "Wegetariańskie", "Deser", "Przystawka"};
+        foodTypeList = new JComboBox<String>(FoodTypesStrings);
+        foodTypeList.setSelectedIndex(index);
+        foodTypeList.addActionListener(this);
+        foodTypeList.setVisible(true);
+        foodTypeList.setBounds(410, 120, 150, 25);
+        foodTypeList.addActionListener(this);
+        foodTypeList.setEditable(false);
+    }
     public void TextArea() throws IOException {
-        textArea = new JTextArea(10, 40);
-        /*/JFileChooser file = new JFileChooser();
-        textArea.read( new FileReader( file.getAbsolutePath() ), null );
-        BufferedReader br = new BufferedReader(new FileReader(file.getAbsolutePath()));
-        String linia;
-        String tekst = "";
-        while ((linia = br.readLine()) != null) {
-            tekst = tekst+linia+"\n" ;
-        }
-        br.close();
-        tekst = tekst.toUpperCase();/*/
-        textArea.setText(tekst);
+        textArea = new JTextArea(100, 100);
         textArea.getDocument();
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
-        textArea.setBounds(10, 150, 475, 160);
+        textArea.setBounds(10, 150, 575, 160);
         textArea.setFont(new Font("Serif", Font.ITALIC, 16));
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
-        textArea.setColumns(10);
-        textArea.setRows(10);
         textArea.setBackground(Color.white);
-        textArea.setSize(475, 160);
         textArea.setLayout(null);
         textArea.setText("");
         textArea.setEditable(true);
         textArea.setToolTipText("Tutaj wyświetla się przepis");
         textArea.setVisible(true);
         textArea.setWrapStyleWord(true);
-        textArea.setText(tekst);
     }
 
     public void Separator() {
@@ -220,41 +306,14 @@ public class Window extends JFrame implements ActionListener {
         Vege.setVisible(true);
     }
 
-    public class ReadFile {
 
-        private String path;
-
-    public ReadFile(String file_path) {
-        path = file_path;
+    public void save_to_file() throws IOException {
+        tekstPrzepisu = textArea.getText();
+        tytuł = titleField.getText();
+        FileWriter fw = new FileWriter(path + fs + tytuł + ".txt");
+        fw.write(tekstPrzepisu);
+        fw.close();
     }
-        int readLines() throws IOException{
-            FileReader file_to_read = new FileReader(path);
-            BufferedReader bf = new BufferedReader(file_to_read);
-
-            String aLine;
-            int NumberOfLines = 0;
-            while ((aLine = bf.readLine())!= null){
-                NumberOfLines++;
-            }
-            bf.close();
-            return NumberOfLines;
-        }
-    public String[] OpenFile() throws IOException{
-        readLines();
-        FileReader fr = new FileReader(path);
-        BufferedReader br = new BufferedReader(fr);
-        int NumberOfLines = 10;
-        String[] textData = new String[NumberOfLines];
-        int i;
-        for (i = 0; i < NumberOfLines; i++) {
-            textData[i] = br.readLine();
-        }
-        br.close();
-        return textData;
-    }
-
-}
-
 
 
     @Override
@@ -264,8 +323,7 @@ public class Window extends JFrame implements ActionListener {
             dispose();
         } else if (bSource == Wyjscie) {
             dispose();
-        } else {
-            if (bSource == buttonActivator) {
+        } else if (bSource == buttonActivator) {
 
                 Random r = new Random();
 
@@ -325,20 +383,26 @@ public class Window extends JFrame implements ActionListener {
                 getContentPane().add(Vege);
                 getContentPane().add(Meat);
                 repaint();
-                textArea.setText(tekstPrzepisu.toString());
-                repaint();
-            }/*/else if (bSource == Zmodyfikuj){
-                int odpowiedz = jFileChooserOtworzPlik.showOpenDialog(this);
-                if (odpowiedz == jFileChooserOtworzPlik.APPROVE_OPTION) {
-                    File file = jFileChooserOtworzPlik.getSelectedFile();
-                    try {"dupa dupa dupa, przepisy w trakcie dodawania"
-                        textArea.read( new FileReader( file.getAbsolutePath() ), null );
-                    } catch (IOException e) {
-                        System.out.println("Nie mogę otworzyć pliku: "+file.getAbsolutePath());
-                        System.out.println("Problem: "+e);
-                    }/*/
+            textArea.setText(tekstPrzepisu);
+
+        } else if (bSource == Zapisz) {
+            try {
+                save_to_file();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+
         }
+        //foodTypeList = (JComboBox)e.getSource();
+        path = (String) foodTypeList.getSelectedItem();
+
 
     }
+
 }
+
+
+
+
+
 

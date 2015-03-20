@@ -7,7 +7,7 @@ public class Main {
     public static void main(String[] args) throws Exception , IOException {
         Window w = new Window();
         w.Window();
-        Window.ReadFile ReadFile;
+        //  Window.ReadFile ReadFile;
       /*/  try{
             String file_name = "E:/text.txt";
            Window.ReadFile file = new Window.ReadFile(file_name);
