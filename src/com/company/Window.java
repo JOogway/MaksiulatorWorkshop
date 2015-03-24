@@ -7,6 +7,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -15,6 +16,7 @@ import java.util.Random;
 public class Window extends JFrame implements ActionListener {
     public JSeparator separator;
 
+    public static ArrayList<String> listaRybna;
     JButton buttonExit, buttonActivator, buttonActivatorRecipe, Fish, Meat, Vege;
     JTextField titleField;
     JMenuBar MenuBar;
@@ -28,6 +30,7 @@ public class Window extends JFrame implements ActionListener {
     int number, index = 1, toReadPath, i, j;
     JTextArea textArea;
     String fs = System.getProperty("file.separator");
+
 
 
     public void Window() throws Exception {
@@ -69,6 +72,7 @@ public class Window extends JFrame implements ActionListener {
         setVisible(true);
         setResizable(false);
     }
+
 
     public void LShowReaction0() {
         lShowReaction0 = new JLabel("Kliknij raz guziczek. :*");
@@ -295,10 +299,14 @@ public class Window extends JFrame implements ActionListener {
         Vege.setVisible(true);
         Vege.addActionListener(this);
     }
-    public void save_to_file() throws IOException {
-        absolutePath = path + fs + tytuł + ".txt";
+
+    public void save_to_file() throws IOException, NullPointerException {
+        listaRybna = new ArrayList<String>();
         tekstPrzepisu = textArea.getText();
         tytuł = titleField.getText();
+        absolutePath = path + fs + tytuł + ".txt";
+        String doListy = tytuł;
+        listaRybna.add(doListy);
         FileWriter fw = new FileWriter(absolutePath);
         fw.write(tekstPrzepisu);
         fw.close();
@@ -323,13 +331,19 @@ public class Window extends JFrame implements ActionListener {
                 break;
 
         }
-        for (i = 0; i < j + 1; i++) {
-            if (!baseOfFish[j].isEmpty()) {
-                tytuł = baseOfFish[j];
+        int zas = listaRybna.size();
+        Random R = new Random(zas);
+        int l = R.nextInt();
+        tytuł = listaRybna.get(l);
+        /*for (i=0;i<listaRybna.size()+1;i++){
+
+            tytuł = listaRybna.get(i);
+            if (tytuł != null) {
+                tytuł = listaRybna.get(j);
             } else {
                 j++;
             }
-        }
+        }*/
         absolutePath = path + fs + tytuł + ".txt";
         titleField.setText(tytuł);
         FileReader reader = new FileReader(tytuł);
@@ -342,21 +356,15 @@ public class Window extends JFrame implements ActionListener {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
-
     public void AddToArray() {
         for (i = 0; i < j; i++) {
-            if (baseOfFish[j] != null) {
+            if (baseOfFish[j].isEmpty()) {
                 baseOfFish[j] = tytuł;
             } else {
                 j++;
             }
-
         }
-
-
     }
 
     @Override
@@ -441,7 +449,7 @@ public class Window extends JFrame implements ActionListener {
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
-            AddToArray();
+
         } else if (bSource == Fish) {
             toReadPath = 0;
             try {
