@@ -37,6 +37,7 @@ public class Window extends JFrame implements ActionListener {
     String fs = System.getProperty("file.separator");
     Toolkit toolkit = Toolkit.getDefaultToolkit();
     Image image = toolkit.getImage("src/data/cursor.png");
+    File filePath;
 
 
     public void Window() throws Exception {
@@ -122,34 +123,6 @@ public class Window extends JFrame implements ActionListener {
         File AppeList = new File("Przystawka/ListaPrzystawek.txt");
         PrintWriter fileWriter;
 
-        if (!FishList.exists()) {
-            fileWriter = new PrintWriter(FishList);
-            fileWriter.print("");
-            fileWriter.close();
-
-        }
-        if (!MeatList.exists()) {
-            fileWriter = new PrintWriter(MeatList);
-            fileWriter.print("");
-            fileWriter.close();
-        }
-        if (!WegeList.exists()) {
-            fileWriter = new PrintWriter(WegeList);
-            fileWriter.print("");
-            fileWriter.close();
-        }
-        if (!DesertList.exists()) {
-            fileWriter = new PrintWriter(DesertList);
-            fileWriter.print("");
-            fileWriter.close();
-        }
-        if (!AppeList.exists()) {
-            fileWriter = new PrintWriter(AppeList);
-            fileWriter.print("");
-            fileWriter.close();
-        }
-
-
         // if the directory does not exist, create it
         if (!theDir0.exists()) {
             System.out.println("creating directory: " + "Rybne");
@@ -225,6 +198,32 @@ public class Window extends JFrame implements ActionListener {
                 System.out.println("DIR created");
             }
         }
+        if (!FishList.exists()) {
+            fileWriter = new PrintWriter(FishList);
+            fileWriter.print("");
+            fileWriter.close();
+
+        }
+        if (!MeatList.exists()) {
+            fileWriter = new PrintWriter(MeatList);
+            fileWriter.print("");
+            fileWriter.close();
+        }
+        if (!WegeList.exists()) {
+            fileWriter = new PrintWriter(WegeList);
+            fileWriter.print("");
+            fileWriter.close();
+        }
+        if (!DesertList.exists()) {
+            fileWriter = new PrintWriter(DesertList);
+            fileWriter.print("");
+            fileWriter.close();
+        }
+        if (!AppeList.exists()) {
+            fileWriter = new PrintWriter(AppeList);
+            fileWriter.print("");
+            fileWriter.close();
+        }
     }
     public void Zapisz() {
         Zapisz = new JMenuItem("Zapisz", 'Z');
@@ -253,9 +252,21 @@ public class Window extends JFrame implements ActionListener {
                     "TXT & DOCX Docs", "txt", "docx");
             chooser.setFileFilter(filter);
             int returnVal = chooser.showOpenDialog(this);
+            filePath = chooser.getSelectedFile();
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 System.out.println("You chose to open this file: " +
                         chooser.getSelectedFile().getName());
+                try {
+                    BufferedReader in = new BufferedReader(new FileReader(filePath));
+                    String line = null;
+                    while ((line = in.readLine()) != null) {
+                        textArea.append(line + "\n");
+                        titleField.setText(chooser.getSelectedFile().getName());
+                    }
+                    in.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
             }
         });
     }
@@ -326,7 +337,6 @@ public class Window extends JFrame implements ActionListener {
         foodTypeList.addActionListener(this);
         foodTypeList.setVisible(true);
         foodTypeList.setBounds(410, 120, 189, 25);
-        //foodTypeList.addActionListener(e -> );
         foodTypeList.setEditable(false);
     }
     public void TextArea() throws IOException {
@@ -335,7 +345,7 @@ public class Window extends JFrame implements ActionListener {
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
         textArea.setBounds(10, 150, 589, 160);
-        textArea.setFont(new Font("Serif", Font.ITALIC, 16));
+        textArea.setFont(new Font("Serif", Font.ITALIC, 13));
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
         textArea.setBackground(Color.white);
@@ -437,15 +447,7 @@ public class Window extends JFrame implements ActionListener {
         Random R = new Random(zas);
         int l = R.nextInt() % listaRybna.size();
         tytuł = listaRybna.get(l);
-        /*for (i=0;i<listaRybna.size()+1;i++){
 
-            tytuł = listaRybna.get(i);
-            if (tytuł != null) {
-                tytuł = listaRybna.get(j);
-            } else {
-                j++;
-            }
-        }*/
         absolutePath = path + fs + tytuł + ".txt";
         titleField.setText(tytuł);
         FileReader reader = new FileReader(tytuł);
