@@ -1,13 +1,18 @@
 package com.company;
 
 import javafx.stage.FileChooser;
-
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 /**
@@ -23,14 +28,15 @@ public class Window extends JFrame implements ActionListener {
     JComboBox foodTypeList;
     JLabel lShowReaction0, lShowReaction1, lShowReaction2;
     JMenu plik, pomoc;
-    JMenuItem Choose, Zapisz, Wyjscie, About_Program;
+    JMenuItem OpenMenuItem, Zapisz, Wyjscie, About_Program;
     String About = "Program dla Aniutka", tekst = "Tutaj pojawia się przepis", tytuł, absolutePath;
     String tekstPrzepisu = "brak", path = "Mięsne";
     String[] baseOfFish;
     int number, index = 1, toReadPath, i, j;
     JTextArea textArea;
     String fs = System.getProperty("file.separator");
-
+    Toolkit toolkit = Toolkit.getDefaultToolkit();
+    Image image = toolkit.getImage("src/data/cursor.png");
 
 
     public void Window() throws Exception {
@@ -68,6 +74,9 @@ public class Window extends JFrame implements ActionListener {
         getContentPane().add(buttonActivatorRecipe);
         getContentPane().add(Wyjscie);
         setJMenuBar(MenuBar);
+        Point spot = new Point(1, 1);
+        Cursor c = toolkit.createCustomCursor(image, spot, "cursor");
+        this.setCursor(c);
         repaint();
         setVisible(true);
         setResizable(false);
@@ -76,10 +85,11 @@ public class Window extends JFrame implements ActionListener {
 
     public void LShowReaction0() {
         lShowReaction0 = new JLabel("Kliknij raz guziczek. :*");
-        lShowReaction0.setBounds(10, 10, 200, 20);
+        lShowReaction0.setBounds(10, 10, 300, 20);
         lShowReaction0.setFont(new Font("TimesNewRoman", Font.BOLD, 15));
         lShowReaction0.setForeground(new Color(250, 150, 50));
         lShowReaction0.setVisible(true);
+
 
     }
 
@@ -93,17 +103,51 @@ public class Window extends JFrame implements ActionListener {
 
     public void LShowReaction2() {
         lShowReaction2 = new JLabel("");
-        lShowReaction2.setBounds(10, 70, 400, 60);
+        lShowReaction2.setBounds(10, 70, 500, 60);
         lShowReaction2.setFont(new Font("TimesNewRoman", Font.BOLD, 12));
         lShowReaction2.setForeground(new Color(250, 50, 50));
         lShowReaction2.setVisible(true);
     }
-    public void DirectoryCreator() {
+
+    public void DirectoryCreator() throws IOException {
         File theDir0 = new File("Rybne");
+        File FishList = new File("Rybne/ListaRybnych.txt");
         File theDir1 = new File("Mięsne");
+        File MeatList = new File("Mięsne/ListaMięsnych.txt");
         File theDir2 = new File("Wegetariańskie");
+        File WegeList = new File("Wegetariańskie/ListaWege.txt");
         File theDir3 = new File("Deser");
+        File DesertList = new File("Deser/ListaDeserów.txt");
         File theDir4 = new File("Przystawka");
+        File AppeList = new File("Przystawka/ListaPrzystawek.txt");
+        PrintWriter fileWriter;
+
+        if (!FishList.exists()) {
+            fileWriter = new PrintWriter(FishList);
+            fileWriter.print("");
+            fileWriter.close();
+
+        }
+        if (!MeatList.exists()) {
+            fileWriter = new PrintWriter(MeatList);
+            fileWriter.print("");
+            fileWriter.close();
+        }
+        if (!WegeList.exists()) {
+            fileWriter = new PrintWriter(WegeList);
+            fileWriter.print("");
+            fileWriter.close();
+        }
+        if (!DesertList.exists()) {
+            fileWriter = new PrintWriter(DesertList);
+            fileWriter.print("");
+            fileWriter.close();
+        }
+        if (!AppeList.exists()) {
+            fileWriter = new PrintWriter(AppeList);
+            fileWriter.print("");
+            fileWriter.close();
+        }
 
 
         // if the directory does not exist, create it
@@ -185,17 +229,35 @@ public class Window extends JFrame implements ActionListener {
     public void Zapisz() {
         Zapisz = new JMenuItem("Zapisz", 'Z');
         Zapisz.setVisible(true);
-        Zapisz.addActionListener(this);
+        Zapisz.addActionListener(e -> {
+            try {
+                save_to_file();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+        });
     }
     public void Wyjscie() {
         Wyjscie = new JMenuItem("Wyjście", 'Q');
         Wyjscie.setVisible(true);
-        Wyjscie.addActionListener(this);
+        Wyjscie.addActionListener(e -> System.exit(0));
     }
-    public void Choose() {
-        Choose = new JMenuItem("Otwórz", 'W');
-        Choose.setVisible(true);
-        Choose.addActionListener(this);
+
+    public void OpenMenuItem() {
+        OpenMenuItem = new JMenuItem("Otwórz", 'W');
+        OpenMenuItem.setVisible(true);
+        OpenMenuItem.addActionListener(e -> {
+            JFileChooser chooser = new JFileChooser();
+            chooser.setCurrentDirectory(new File(System.getProperty("user.home") + System.getProperty("file.separator") + "IdeaProjects" + System.getProperty("file.separator") + "MaksiulatorWorkshop"));
+            FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                    "TXT & DOCX Docs", "txt", "docx");
+            chooser.setFileFilter(filter);
+            int returnVal = chooser.showOpenDialog(this);
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
+                System.out.println("You chose to open this file: " +
+                        chooser.getSelectedFile().getName());
+            }
+        });
     }
     public void Pomoc() {
         pomoc = new JMenu("Pomoc");
@@ -204,11 +266,11 @@ public class Window extends JFrame implements ActionListener {
     }
     public void MenuBar() {
         Pomoc();
-        Choose();
+        OpenMenuItem();
         Zapisz();
         Wyjscie();
         plik = new JMenu("Plik...");
-        plik.add(Choose);
+        plik.add(OpenMenuItem);
         plik.add(Zapisz);
         plik.addSeparator();
         plik.add(Wyjscie);
@@ -222,6 +284,7 @@ public class Window extends JFrame implements ActionListener {
     public void About() {
         About_Program = new JMenuItem("O programie", 'I');
         About_Program.setVisible(true);
+        About_Program.addActionListener(e -> tekst = About);
         pomoc.add(About_Program);
     }
     public void ButtonActivator() {
@@ -229,19 +292,25 @@ public class Window extends JFrame implements ActionListener {
         buttonActivator.setBounds(10, 350, 200, 20);
         buttonActivator.setToolTipText("Losuje Twoją cyferkę na dziś");
         buttonActivator.setVisible(true);
-        buttonActivator.addActionListener(this);
+        buttonActivator.addActionListener(ButtonActivatorAction());
     }
     public void ButtonExit() {
         buttonExit = new JButton("Wyjście");
         buttonExit.setBounds(500, 350, 99, 20);
         buttonExit.setVisible(true);
-        buttonExit.addActionListener(this);
+        buttonExit.addActionListener(e -> System.exit(0));
     }
     public void ButtonActivatorRecipe() {
         buttonActivatorRecipe = new JButton("Wyświetl losowy przepis");
         buttonActivatorRecipe.setBounds(210, 350, 220, 20);
         buttonActivatorRecipe.setVisible(true);
-        buttonActivatorRecipe.addActionListener(this);
+        buttonActivatorRecipe.addActionListener(e -> {
+            getContentPane().add(Fish);
+            getContentPane().add(Vege);
+            getContentPane().add(Meat);
+            repaint();
+            textArea.setText(tekstPrzepisu);
+        });
     }
     public void TitleField() {
         titleField = new JTextField(tytuł);
@@ -252,12 +321,12 @@ public class Window extends JFrame implements ActionListener {
     public void ChooseKindField() {
 
         String[] FoodTypesStrings = {"Rybne", "Mięsne", "Wegetariańskie", "Deser", "Przystawka"};
-        foodTypeList = new JComboBox<String>(FoodTypesStrings);
+        foodTypeList = new JComboBox<>(FoodTypesStrings);
         foodTypeList.setSelectedIndex(index);
         foodTypeList.addActionListener(this);
         foodTypeList.setVisible(true);
         foodTypeList.setBounds(410, 120, 189, 25);
-        foodTypeList.addActionListener(this);
+        //foodTypeList.addActionListener(e -> );
         foodTypeList.setEditable(false);
     }
     public void TextArea() throws IOException {
@@ -285,23 +354,44 @@ public class Window extends JFrame implements ActionListener {
         Fish = new JButton("Danie rybne");
         Fish.setBounds(40, 320, 155, 20);
         Fish.setVisible(true);
-        Fish.addActionListener(this);
+        Fish.addActionListener(e -> {
+            toReadPath = 0;
+            try {
+                open_file();
+            } catch (FileNotFoundException e1) {
+                e1.printStackTrace();
+            }
+        });
     }
     public void Meat() {
         Meat = new JButton("Danie mięsne");
         Meat.setBounds(240, 320, 155, 20);
         Meat.setVisible(true);
-        Meat.addActionListener(this);
+        Meat.addActionListener(e -> {
+            toReadPath = 1;
+            try {
+                open_file();
+            } catch (FileNotFoundException e1) {
+                e1.printStackTrace();
+            }
+        });
     }
     public void Vege() {
         Vege = new JButton("Danie wege");
         Vege.setBounds(444, 320, 155, 20);
         Vege.setVisible(true);
-        Vege.addActionListener(this);
+        Vege.addActionListener(e -> {
+            toReadPath = 2;
+            try {
+                open_file();
+            } catch (FileNotFoundException e1) {
+                e1.printStackTrace();
+            }
+        });
     }
 
     public void save_to_file() throws IOException, NullPointerException {
-        listaRybna = new ArrayList<String>();
+        listaRybna = new ArrayList<>();
         tekstPrzepisu = textArea.getText();
         tytuł = titleField.getText();
         absolutePath = path + fs + tytuł + ".txt";
@@ -310,6 +400,19 @@ public class Window extends JFrame implements ActionListener {
         FileWriter fw = new FileWriter(absolutePath);
         fw.write(tekstPrzepisu);
         fw.close();
+    }
+
+    public void randRecipe() {
+        Random r = new Random();
+        int whatType = r.nextInt() % 3;
+        switch (whatType) {
+            case 0:
+                path = "Rybne";
+            case 1:
+                path = "Mięsne";
+            case 2:
+                path = "Wegetariańskie";
+        }
     }
 
     public void open_file() throws FileNotFoundException {
@@ -329,11 +432,10 @@ public class Window extends JFrame implements ActionListener {
             case 4:
                 path = "Przystawka";
                 break;
-
         }
         int zas = listaRybna.size();
         Random R = new Random(zas);
-        int l = R.nextInt();
+        int l = R.nextInt() % listaRybna.size();
         tytuł = listaRybna.get(l);
         /*for (i=0;i<listaRybna.size()+1;i++){
 
@@ -367,13 +469,8 @@ public class Window extends JFrame implements ActionListener {
         }
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
 
-        Object bSource = e.getSource();
-
-
-        if (bSource == buttonActivator) {
+    public ActionListener ButtonActivatorAction() {
 
             Random r = new Random();
 
@@ -416,7 +513,7 @@ public class Window extends JFrame implements ActionListener {
                     break;
                 case 8:
                     lShowReaction1.setText("Osiem to stojąca cyfra nieskończoności,");
-                    lShowReaction2.setText("coś się kończy, coś się zaczyna a nasza miłoś jest nieśmiertelna :*");
+                    lShowReaction2.setText("coś się kończy, coś się zaczyna a nasza miłość jest nieśmiertelna :*");
                     break;
                 case 9:
                     lShowReaction1.setText("Dziewiątka to symbol odrodzenia i podróży, ");
@@ -426,63 +523,17 @@ public class Window extends JFrame implements ActionListener {
                     lShowReaction1.setText("10 jest jak 2 tylko po binarnemu... :D");
                     lShowReaction2.setText("Do nauki! Albo Polibuda nas zje...");
             }
+        return null;
+    }
 
 
-        }
-        if (bSource == buttonExit) {
-            System.exit(0);
-        } else if (bSource == Wyjscie) {
-            System.exit(0);
+    @Override
+    public void actionPerformed(ActionEvent e) {
 
-            } else if (bSource == About_Program) {
-                tekst = About;
-            }else if (bSource == buttonActivatorRecipe){
-                getContentPane().add(Fish);
-                getContentPane().add(Vege);
-                getContentPane().add(Meat);
-                repaint();
-            textArea.setText(tekstPrzepisu);
+        Object bSource = e.getSource();
 
-        } else if (bSource == Zapisz) {
-            try {
-                save_to_file();
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
 
-        } else if (bSource == Fish) {
-            toReadPath = 0;
-            try {
-                open_file();
-            } catch (FileNotFoundException e1) {
-                e1.printStackTrace();
-            }
-
-        } else if (bSource == Meat) {
-            toReadPath = 1;
-            try {
-                open_file();
-            } catch (FileNotFoundException e1) {
-                e1.printStackTrace();
-            }
-
-        } else if (bSource == Vege) {
-            toReadPath = 2;
-            try {
-                open_file();
-            } catch (FileNotFoundException e1) {
-                e1.printStackTrace();
-            }
-        } else if (bSource == buttonActivatorRecipe) {
-            Random r = new Random();
-
-           /*/ toReadPath = r.nextInt(4);
-            try {
-                open_file();
-            } catch (FileNotFoundException e1) {
-                e1.printStackTrace();
-            }/*/
-        }
+        if (bSource == buttonActivator)
 
 
         path = (String) foodTypeList.getSelectedItem();
