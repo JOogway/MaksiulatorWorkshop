@@ -1,19 +1,15 @@
 package com.company;
 
-import javafx.stage.FileChooser;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
+import java.util.Scanner;
 
 /**
  * Created by Maksym on 2014-11-09.
@@ -21,7 +17,12 @@ import java.util.Random;
 public class Window extends JFrame implements ActionListener {
     public JSeparator separator;
 
-    public static ArrayList<String> listaRybna;
+    List<String> listaRybna = new ArrayList<String>();
+    List<String> listaMięsna = new ArrayList<String>();
+    List<String> listaWege = new ArrayList<String>();
+    List<String> listaDeser = new ArrayList<String>();
+    List<String> listaPrzystawek = new ArrayList<String>();
+
     JButton buttonExit, buttonActivator, buttonActivatorRecipe, Fish, Meat, Vege;
     JTextField titleField;
     JMenuBar MenuBar;
@@ -29,10 +30,9 @@ public class Window extends JFrame implements ActionListener {
     JLabel lShowReaction0, lShowReaction1, lShowReaction2;
     JMenu plik, pomoc;
     JMenuItem OpenMenuItem, Zapisz, Wyjscie, About_Program;
-    String About = "Program dla Aniutka", tekst = "Tutaj pojawia się przepis", tytuł, absolutePath;
+    String About = "Program dedykowany specjalnie dla Aniutka", tekst = "Tutaj pojawia się przepis", tytuł, absolutePath;
     String tekstPrzepisu = "brak", path = "Mięsne";
-    String[] baseOfFish;
-    int number, index = 1, toReadPath, i, j;
+    int number, index, toReadPath, i, j;
     JTextArea textArea;
     String fs = System.getProperty("file.separator");
     Toolkit toolkit = Toolkit.getDefaultToolkit();
@@ -41,6 +41,7 @@ public class Window extends JFrame implements ActionListener {
 
 
     public void Window() throws Exception {
+        getLists();
         LShowReaction0();
         LShowReaction1();
         LShowReaction2();
@@ -83,6 +84,30 @@ public class Window extends JFrame implements ActionListener {
         setResizable(false);
     }
 
+    public void getLists() throws FileNotFoundException {
+        Scanner s0 = new Scanner((new File("Rybne/ListaRybnych.txt")));
+        Scanner s1 = new Scanner((new File("Mięsne/ListaMięsnych.txt")));
+        Scanner s2 = new Scanner((new File("Wegetariańskie/ListaWege.txt")));
+        Scanner s3 = new Scanner((new File("Deser/ListaDeserów.txt")));
+        Scanner s4 = new Scanner((new File("Przystawka/ListaPrzystawek.txt")));
+
+        while (s0.hasNextLine()) {
+            listaRybna.add(s0.nextLine());
+        }
+        while (s1.hasNextLine()) {
+            listaMięsna.add(s1.nextLine());
+        }
+        while (s2.hasNextLine()) {
+            listaWege.add(s2.nextLine());
+        }
+        while (s3.hasNextLine()) {
+            listaDeser.add(s3.nextLine());
+        }
+        while (s4.hasNextLine()) {
+            listaPrzystawek.add(s4.nextLine());
+        }
+
+    }
 
     public void LShowReaction0() {
         lShowReaction0 = new JLabel("Kliknij raz guziczek. :*");
@@ -259,6 +284,7 @@ public class Window extends JFrame implements ActionListener {
                 try {
                     BufferedReader in = new BufferedReader(new FileReader(filePath));
                     String line = null;
+                    textArea.setText("");
                     while ((line = in.readLine()) != null) {
                         textArea.append(line + "\n");
                         titleField.setText(chooser.getSelectedFile().getName());
@@ -270,11 +296,13 @@ public class Window extends JFrame implements ActionListener {
             }
         });
     }
+
     public void Pomoc() {
         pomoc = new JMenu("Pomoc");
         pomoc.setVisible(true);
         pomoc.addActionListener(this);
     }
+
     public void MenuBar() {
         Pomoc();
         OpenMenuItem();
@@ -292,12 +320,14 @@ public class Window extends JFrame implements ActionListener {
         MenuBar.add(pomoc);
         MenuBar.setVisible(true);
     }
+
     public void About() {
         About_Program = new JMenuItem("O programie", 'I');
         About_Program.setVisible(true);
-        About_Program.addActionListener(e -> tekst = About);
+        About_Program.addActionListener(e -> textArea.setText(About));
         pomoc.add(About_Program);
     }
+
     public void ButtonActivator() {
         buttonActivator = new JButton("Losuj Cyferke na dziś :*");
         buttonActivator.setBounds(10, 350, 200, 20);
@@ -305,12 +335,14 @@ public class Window extends JFrame implements ActionListener {
         buttonActivator.setVisible(true);
         buttonActivator.addActionListener(ButtonActivatorAction());
     }
+
     public void ButtonExit() {
         buttonExit = new JButton("Wyjście");
         buttonExit.setBounds(500, 350, 99, 20);
         buttonExit.setVisible(true);
         buttonExit.addActionListener(e -> System.exit(0));
     }
+
     public void ButtonActivatorRecipe() {
         buttonActivatorRecipe = new JButton("Wyświetl losowy przepis");
         buttonActivatorRecipe.setBounds(210, 350, 220, 20);
@@ -323,22 +355,25 @@ public class Window extends JFrame implements ActionListener {
             textArea.setText(tekstPrzepisu);
         });
     }
+
     public void TitleField() {
         titleField = new JTextField(tytuł);
         titleField.setVisible(true);
         titleField.setBounds(10, 120, 400, 25);
         titleField.setEditable(true);
     }
+
     public void ChooseKindField() {
 
         String[] FoodTypesStrings = {"Rybne", "Mięsne", "Wegetariańskie", "Deser", "Przystawka"};
         foodTypeList = new JComboBox<>(FoodTypesStrings);
         foodTypeList.setSelectedIndex(index);
-        foodTypeList.addActionListener(this);
+        foodTypeList.addActionListener(e -> index = foodTypeList.getSelectedIndex());
         foodTypeList.setVisible(true);
         foodTypeList.setBounds(410, 120, 189, 25);
         foodTypeList.setEditable(false);
     }
+
     public void TextArea() throws IOException {
         textArea = new JTextArea(100, 100);
         textArea.getDocument();
@@ -356,10 +391,12 @@ public class Window extends JFrame implements ActionListener {
         textArea.setVisible(true);
         textArea.setWrapStyleWord(true);
     }
+
     public void Separator() {
         separator = new JSeparator();
         separator.setBounds(160, 90, 490, 0);
     }
+
     public void Fish() {
         Fish = new JButton("Danie rybne");
         Fish.setBounds(40, 320, 155, 20);
@@ -373,6 +410,7 @@ public class Window extends JFrame implements ActionListener {
             }
         });
     }
+
     public void Meat() {
         Meat = new JButton("Danie mięsne");
         Meat.setBounds(240, 320, 155, 20);
@@ -386,6 +424,7 @@ public class Window extends JFrame implements ActionListener {
             }
         });
     }
+
     public void Vege() {
         Vege = new JButton("Danie wege");
         Vege.setBounds(444, 320, 155, 20);
@@ -401,20 +440,15 @@ public class Window extends JFrame implements ActionListener {
     }
 
     public void save_to_file() throws IOException, NullPointerException {
-        listaRybna = new ArrayList<>();
         tekstPrzepisu = textArea.getText();
         tytuł = titleField.getText();
         absolutePath = path + fs + tytuł + ".txt";
-        String doListy = tytuł;
-        listaRybna.add(doListy);
-        FileWriter fw = new FileWriter(absolutePath);
-        fw.write(tekstPrzepisu);
-        fw.close();
+        AddToList(tytuł, index);
     }
 
     public void randRecipe() {
         Random r = new Random();
-        int whatType = r.nextInt() % 3;
+        int whatType = r.nextInt() % 5;
         switch (whatType) {
             case 0:
                 path = "Rybne";
@@ -422,27 +456,16 @@ public class Window extends JFrame implements ActionListener {
                 path = "Mięsne";
             case 2:
                 path = "Wegetariańskie";
+            case 3:
+                path = "Deser";
+            case 4:
+                path = "Przystawka";
         }
     }
 
     public void open_file() throws FileNotFoundException {
-        switch (toReadPath) {
-            case 0:
-                path = "Rybne";
-                break;
-            case 1:
-                path = "Mięsne";
-                break;
-            case 2:
-                path = "Wegetariańskie";
-                break;
-            case 3:
-                path = "Deser";
-                break;
-            case 4:
-                path = "Przystawka";
-                break;
-        }
+        randRecipe();
+
         int zas = listaRybna.size();
         Random R = new Random(zas);
         int l = R.nextInt() % listaRybna.size();
@@ -461,14 +484,50 @@ public class Window extends JFrame implements ActionListener {
             e.printStackTrace();
         }
     }
-    public void AddToArray() {
-        for (i = 0; i < j; i++) {
-            if (baseOfFish[j].isEmpty()) {
-                baseOfFish[j] = tytuł;
-            } else {
-                j++;
-            }
+
+    public void AddToList(String tytuł, int index) throws IOException {
+        String path = null;
+        if (index == 0) {
+            path = "Rybne/ListaRybnych.txt";
+            PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(path, true)));
+            listaRybna.add(tytuł);
+            System.out.println(listaRybna);
+            out.println(tytuł);
+            out.close();
         }
+        if (index == 1) {
+            path = "Mięsne/ListaMięsnych.txt";
+            PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(path, true)));
+            listaMięsna.add(tytuł);
+            System.out.println(listaMięsna);
+            out.println(tytuł);
+            out.close();
+        }
+        if (index == 2) {
+            path = "Wegetariańskie/ListaWege.txt";
+            PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(path, true)));
+            listaWege.add(tytuł);
+            System.out.println(listaWege);
+            out.println(tytuł);
+            out.close();
+        }
+        if (index == 3) {
+            path = "Deser/ListaDeserów.txt";
+            PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(path, true)));
+            listaDeser.add(tytuł);
+            System.out.println(listaDeser);
+            out.println(tytuł);
+            out.close();
+        }
+        if (index == 4) {
+            path = "Przystawka/ListaPrzystawek.txt";
+            PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(path, true)));
+            listaPrzystawek.add(tytuł);
+            System.out.println(listaPrzystawek);
+            out.println(tytuł);
+            out.close();
+        }
+
     }
 
 
