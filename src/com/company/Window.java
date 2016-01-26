@@ -14,7 +14,7 @@ import java.util.Scanner;
 /**
  * Created by Maksym on 2014-11-09.
  */
-public class Window extends JFrame implements ActionListener {
+public class Window extends JFrame {
     public JSeparator separator;
 
     List<String> listaRybna = new ArrayList<String>();
@@ -32,16 +32,17 @@ public class Window extends JFrame implements ActionListener {
     JMenuItem OpenMenuItem, Zapisz, Wyjscie, About_Program;
     String About = "Program dedykowany specjalnie dla Aniutka", tekst = "Tutaj pojawia się przepis", tytuł, absolutePath;
     String tekstPrzepisu = "brak", path = "Mięsne";
-    int number, index, toReadPath, i, j;
+    int number, index, toReadPath, i, j, whichRecipe;
+    ;
     JTextArea textArea;
-    String fs = System.getProperty("file.separator");
+    String fs = System.getProperty("file.separator"), lossedRecipePath;
     Toolkit toolkit = Toolkit.getDefaultToolkit();
     Image image = toolkit.getImage("src/data/cursor.png");
     File filePath;
+    Random r = new Random();
 
 
-    public void Window() throws Exception {
-        getLists();
+    public Window() throws Exception {
         LShowReaction0();
         LShowReaction1();
         LShowReaction2();
@@ -63,6 +64,7 @@ public class Window extends JFrame implements ActionListener {
         getContentPane().setLayout(null);
         setLocationRelativeTo(null);
         DirectoryCreator();
+        getLists();
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         getContentPane().add(foodTypeList);
         getContentPane().add(titleField);
@@ -300,7 +302,7 @@ public class Window extends JFrame implements ActionListener {
     public void Pomoc() {
         pomoc = new JMenu("Pomoc");
         pomoc.setVisible(true);
-        pomoc.addActionListener(this);
+        pomoc.addActionListener(e -> textArea.setText("Wszelkie pytania kieruj na e-mail: rut1900@o2.pl"));
     }
 
     public void MenuBar() {
@@ -352,7 +354,11 @@ public class Window extends JFrame implements ActionListener {
             getContentPane().add(Vege);
             getContentPane().add(Meat);
             repaint();
-            textArea.setText(tekstPrzepisu);
+            try {
+                randRecipe();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
         });
     }
 
@@ -403,11 +409,9 @@ public class Window extends JFrame implements ActionListener {
         Fish.setVisible(true);
         Fish.addActionListener(e -> {
             toReadPath = 0;
-            try {
-                open_file();
-            } catch (FileNotFoundException e1) {
-                e1.printStackTrace();
-            }
+            path = "Rybne";
+            whichRecipe = r.nextInt() % listaRybna.size();
+            lossedRecipePath = path + fs + listaRybna.get(whichRecipe) + ".txt";
         });
     }
 
@@ -416,12 +420,9 @@ public class Window extends JFrame implements ActionListener {
         Meat.setBounds(240, 320, 155, 20);
         Meat.setVisible(true);
         Meat.addActionListener(e -> {
-            toReadPath = 1;
-            try {
-                open_file();
-            } catch (FileNotFoundException e1) {
-                e1.printStackTrace();
-            }
+            path = "Mięsne";
+            whichRecipe = r.nextInt() % listaMięsna.size();
+            lossedRecipePath = path + fs + listaMięsna.get(whichRecipe) + ".txt";
         });
     }
 
@@ -430,41 +431,66 @@ public class Window extends JFrame implements ActionListener {
         Vege.setBounds(444, 320, 155, 20);
         Vege.setVisible(true);
         Vege.addActionListener(e -> {
-            toReadPath = 2;
-            try {
-                open_file();
-            } catch (FileNotFoundException e1) {
-                e1.printStackTrace();
-            }
+            path = "Wegetariańskie";
+            whichRecipe = r.nextInt() % listaWege.size();
+            lossedRecipePath = path + fs + listaWege.get(whichRecipe) + ".txt";
         });
     }
 
     public void save_to_file() throws IOException, NullPointerException {
         tekstPrzepisu = textArea.getText();
         tytuł = titleField.getText();
+        path = String.valueOf(foodTypeList.getSelectedItem());
         absolutePath = path + fs + tytuł + ".txt";
         AddToList(tytuł, index);
+        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(absolutePath, true)));
+        out.print(tekstPrzepisu);
+        out.close();
     }
 
-    public void randRecipe() {
-        Random r = new Random();
+    public void randRecipe() throws IOException {
         int whatType = r.nextInt() % 5;
+        int whichRecipe;
+        System.out.println(listaRybna.size() + " " + listaMięsna.size() + " " + listaWege.size() + " " + listaDeser.size() + " " + listaPrzystawek.size());
         switch (whatType) {
             case 0:
                 path = "Rybne";
+                whichRecipe = r.nextInt() % listaRybna.size();
+                lossedRecipePath = path + fs + listaRybna.get(whichRecipe) + ".txt";
+                titleField.setText(listaRybna.get(whichRecipe));
             case 1:
                 path = "Mięsne";
+                whichRecipe = r.nextInt() % listaMięsna.size();
+                lossedRecipePath = path + fs + listaMięsna.get(whichRecipe) + ".txt";
+                titleField.setText(listaMięsna.get(whichRecipe));
             case 2:
                 path = "Wegetariańskie";
+                whichRecipe = r.nextInt() % listaWege.size();
+                lossedRecipePath = path + fs + listaWege.get(whichRecipe) + ".txt";
+                titleField.setText(listaWege.get(whichRecipe));
             case 3:
                 path = "Deser";
+                whichRecipe = r.nextInt() % listaDeser.size();
+                lossedRecipePath = path + fs + listaDeser.get(whichRecipe) + ".txt";
+                titleField.setText(listaDeser.get(whichRecipe));
             case 4:
                 path = "Przystawka";
+                whichRecipe = r.nextInt() % listaPrzystawek.size();
+                lossedRecipePath = path + fs + listaPrzystawek.get(whichRecipe) + ".txt";
+                titleField.setText(listaPrzystawek.get(whichRecipe));
         }
+        BufferedReader in1;
+        in1 = new BufferedReader(new FileReader(lossedRecipePath));
+        System.out.print(lossedRecipePath);
+        String line;
+        textArea.setText("");
+        while ((line = in1.readLine()) != null) {
+            textArea.append(line + "\n");
+        }
+        in1.close();
     }
 
-    public void open_file() throws FileNotFoundException {
-        randRecipe();
+    /*public void open_file() throws FileNotFoundException {
 
         int zas = listaRybna.size();
         Random R = new Random(zas);
@@ -483,7 +509,8 @@ public class Window extends JFrame implements ActionListener {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
+
+    }*/
 
     public void AddToList(String tytuł, int index) throws IOException {
         String path = null;
@@ -588,17 +615,6 @@ public class Window extends JFrame implements ActionListener {
     }
 
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-
-        Object bSource = e.getSource();
-
-
-        if (bSource == buttonActivator)
-
-
-        path = (String) foodTypeList.getSelectedItem();
-    }
 }
 
 
