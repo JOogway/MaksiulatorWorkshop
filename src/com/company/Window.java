@@ -3,13 +3,10 @@ package com.company;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.Random;
-import java.util.Scanner;
 
 /**
  * Created by Maksym on 2014-11-09.
@@ -17,11 +14,11 @@ import java.util.Scanner;
 public class Window extends JFrame {
     public JSeparator separator;
 
-    List<String> listaRybna = new ArrayList<String>();
-    List<String> listaMięsna = new ArrayList<String>();
-    List<String> listaWege = new ArrayList<String>();
-    List<String> listaDeser = new ArrayList<String>();
-    List<String> listaPrzystawek = new ArrayList<String>();
+    List<String> listaRybna = new ArrayList<>();
+    List<String> listaMięsna = new ArrayList<>();
+    List<String> listaWege = new ArrayList<>();
+    List<String> listaDeser = new ArrayList<>();
+    List<String> listaPrzystawek = new ArrayList<>();
 
     JButton buttonExit, buttonActivator, buttonActivatorRecipe, Fish, Meat, Vege;
     JTextField titleField;
@@ -33,7 +30,6 @@ public class Window extends JFrame {
     String About = "Program dedykowany specjalnie dla Aniutka", tekst = "Tutaj pojawia się przepis", tytuł, absolutePath;
     String tekstPrzepisu = "brak", path = "Mięsne";
     int number, index, toReadPath, i, j, whichRecipe;
-    ;
     JTextArea textArea;
     String fs = System.getProperty("file.separator"), lossedRecipePath;
     Toolkit toolkit = Toolkit.getDefaultToolkit();
@@ -252,6 +248,7 @@ public class Window extends JFrame {
             fileWriter.close();
         }
     }
+
     public void Zapisz() {
         Zapisz = new JMenuItem("Zapisz", 'Z');
         Zapisz.setVisible(true);
@@ -263,6 +260,7 @@ public class Window extends JFrame {
             }
         });
     }
+
     public void Wyjscie() {
         Wyjscie = new JMenuItem("Wyjście", 'Q');
         Wyjscie.setVisible(true);
@@ -403,7 +401,7 @@ public class Window extends JFrame {
         separator.setBounds(160, 90, 490, 0);
     }
 
-    public void Fish() {
+    public void Fish() throws IOException {
         Fish = new JButton("Danie rybne");
         Fish.setBounds(40, 320, 155, 20);
         Fish.setVisible(true);
@@ -412,10 +410,33 @@ public class Window extends JFrame {
             path = "Rybne";
             whichRecipe = r.nextInt() % listaRybna.size();
             lossedRecipePath = path + fs + listaRybna.get(whichRecipe) + ".txt";
+            titleField.setText(listaRybna.get(whichRecipe));
+            BufferedReader in1 = null;
+            try {
+                in1 = new BufferedReader(new FileReader(lossedRecipePath));
+            } catch (FileNotFoundException e1) {
+                e1.printStackTrace();
+            }
+            System.out.print(lossedRecipePath);
+            String line;
+            textArea.setText("");
+            try {
+                while ((line = in1.readLine()) != null) {
+                    textArea.append(line + "\n");
+                }
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            try {
+                in1.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
         });
+
     }
 
-    public void Meat() {
+    public void Meat() throws IOException {
         Meat = new JButton("Danie mięsne");
         Meat.setBounds(240, 320, 155, 20);
         Meat.setVisible(true);
@@ -423,10 +444,33 @@ public class Window extends JFrame {
             path = "Mięsne";
             whichRecipe = r.nextInt() % listaMięsna.size();
             lossedRecipePath = path + fs + listaMięsna.get(whichRecipe) + ".txt";
+            titleField.setText(listaMięsna.get(whichRecipe));
+            BufferedReader in1 = null;
+            try {
+                in1 = new BufferedReader(new FileReader(lossedRecipePath));
+            } catch (FileNotFoundException e1) {
+                e1.printStackTrace();
+            }
+            System.out.print(lossedRecipePath);
+            String line;
+            textArea.setText("");
+            try {
+                while ((line = in1.readLine()) != null) {
+                    textArea.append(line + "\n");
+                }
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            try {
+                in1.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
         });
+
     }
 
-    public void Vege() {
+    public void Vege() throws IOException {
         Vege = new JButton("Danie wege");
         Vege.setBounds(444, 320, 155, 20);
         Vege.setVisible(true);
@@ -434,23 +478,50 @@ public class Window extends JFrame {
             path = "Wegetariańskie";
             whichRecipe = r.nextInt() % listaWege.size();
             lossedRecipePath = path + fs + listaWege.get(whichRecipe) + ".txt";
+            titleField.setText(listaWege.get(whichRecipe));
+            BufferedReader in1 = null;
+            try {
+                in1 = new BufferedReader(new FileReader(lossedRecipePath));
+            } catch (FileNotFoundException e1) {
+                e1.printStackTrace();
+            }
+            System.out.print(lossedRecipePath);
+            String line;
+            textArea.setText("");
+            try {
+                while ((line = in1.readLine()) != null) {
+                    textArea.append(line + "\n");
+                }
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            try {
+                in1.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
         });
     }
 
     public void save_to_file() throws IOException, NullPointerException {
         tekstPrzepisu = textArea.getText();
         tytuł = titleField.getText();
-        path = String.valueOf(foodTypeList.getSelectedItem());
-        absolutePath = path + fs + tytuł + ".txt";
-        AddToList(tytuł, index);
-        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(absolutePath, true)));
-        out.print(tekstPrzepisu);
-        out.close();
+        if (!tytuł.isEmpty()) {
+            path = String.valueOf(foodTypeList.getSelectedItem());
+            absolutePath = path + fs + tytuł + ".txt";
+            AddToList(tytuł, index);
+            PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(absolutePath, true)));
+            out.print(tekstPrzepisu);
+            out.close();
+        } else {
+            System.out.print("error: empty title");
+        }
     }
 
     public void randRecipe() throws IOException {
-        int whatType = r.nextInt() % 5;
-        int whichRecipe;
+        Random r1 = new Random();
+        int whatType;
+        whatType = r1.nextInt() % 5;
         System.out.println(listaRybna.size() + " " + listaMięsna.size() + " " + listaWege.size() + " " + listaDeser.size() + " " + listaPrzystawek.size());
         switch (whatType) {
             case 0:
@@ -479,45 +550,60 @@ public class Window extends JFrame {
                 lossedRecipePath = path + fs + listaPrzystawek.get(whichRecipe) + ".txt";
                 titleField.setText(listaPrzystawek.get(whichRecipe));
         }
-        BufferedReader in1;
-        in1 = new BufferedReader(new FileReader(lossedRecipePath));
+        BufferedReader in1 = null;
+        try {
+            in1 = new BufferedReader(new FileReader(lossedRecipePath));
+        } catch (FileNotFoundException e1) {
+            e1.printStackTrace();
+        }
         System.out.print(lossedRecipePath);
         String line;
         textArea.setText("");
-        while ((line = in1.readLine()) != null) {
-            textArea.append(line + "\n");
+        try {
+            while ((line = in1.readLine()) != null) {
+                textArea.append(line + "\n");
+            }
+        } catch (IOException e1) {
+            e1.printStackTrace();
         }
-        in1.close();
+        try {
+            in1.close();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
     }
 
-    /*public void open_file() throws FileNotFoundException {
-
-        int zas = listaRybna.size();
-        Random R = new Random(zas);
-        int l = R.nextInt() % listaRybna.size();
-        tytuł = listaRybna.get(l);
-
-        absolutePath = path + fs + tytuł + ".txt";
-        titleField.setText(tytuł);
-        FileReader reader = new FileReader(tytuł);
-        BufferedReader br = new BufferedReader(reader);
-
-        try {
-            textArea.read(br, null);
-            br.close();
-            textArea.requestFocus();
-        } catch (IOException e) {
-            e.printStackTrace();
+    public void CheckList(String path, String title) {
+        if (index == 0) {
+            for(int i= 0 ;i<=listaRybna.size();i++){
+                if (Objects.equals(listaRybna.get(i), "title")) {
+                    listaRybna.remove("title");
+                    listaRybna.get(i).re
+                }
+            }
+        } else if (index == 1) {
+            if (listaMięsna.contains("title")) {
+                listaMięsna.remove("title");
+            }
+        } else if (index == 2) {
+            if (listaWege.contains("title")) {
+                listaWege.remove("title");
+            }
+        } else if (index == 3) {
+            if (listaPrzystawek.contains("title")) {
+                listaPrzystawek.remove("title");
+            }
         }
-
-    }*/
+    }
 
     public void AddToList(String tytuł, int index) throws IOException {
         String path = null;
         if (index == 0) {
             path = "Rybne/ListaRybnych.txt";
             PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(path, true)));
+            CheckList(path, tytuł);
             listaRybna.add(tytuł);
+
             System.out.println(listaRybna);
             out.println(tytuł);
             out.close();
@@ -525,6 +611,8 @@ public class Window extends JFrame {
         if (index == 1) {
             path = "Mięsne/ListaMięsnych.txt";
             PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(path, true)));
+            CheckList(path, tytuł);
+
             listaMięsna.add(tytuł);
             System.out.println(listaMięsna);
             out.println(tytuł);
@@ -533,6 +621,9 @@ public class Window extends JFrame {
         if (index == 2) {
             path = "Wegetariańskie/ListaWege.txt";
             PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(path, true)));
+            CheckList(path, tytuł);
+
+
             listaWege.add(tytuł);
             System.out.println(listaWege);
             out.println(tytuł);
@@ -541,6 +632,8 @@ public class Window extends JFrame {
         if (index == 3) {
             path = "Deser/ListaDeserów.txt";
             PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(path, true)));
+            CheckList(path, tytuł);
+
             listaDeser.add(tytuł);
             System.out.println(listaDeser);
             out.println(tytuł);
@@ -549,6 +642,8 @@ public class Window extends JFrame {
         if (index == 4) {
             path = "Przystawka/ListaPrzystawek.txt";
             PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(path, true)));
+            CheckList(path, tytuł);
+
             listaPrzystawek.add(tytuł);
             System.out.println(listaPrzystawek);
             out.println(tytuł);
@@ -560,61 +655,59 @@ public class Window extends JFrame {
 
     public ActionListener ButtonActivatorAction() {
 
-            Random r = new Random();
+        Random r = new Random();
 
-            number = r.nextInt(10);
+        number = r.nextInt(10);
 
-            lShowReaction0.setText("Twoja cyferka na dziś to: " + " " + Integer.toString(number));
-            buttonActivator.setVisible(false);
-            switch (number) {
-                case 0:
-                    lShowReaction1.setText("Bo tyle będzie dzisiaj zmartwień :*");
-                    lShowReaction2.setText("Uśmiechnij się Pysiu :*");
-                    break;
-                case 1:
-                    lShowReaction1.setText("1# bo jesteś number one :*");
-                    lShowReaction2.setText("Pingwinek Cię Kocha :*");
-                    break;
-                case 2:
-                    lShowReaction1.setText("Cyferka dwa tak jak Ty i ja :*");
-                    lShowReaction2.setText("Tuluu! :*");
-                    break;
-                case 3:
-                    lShowReaction1.setText("Cyferka trzy, Koteczka szukasz Tyyy :*");
-                    lShowReaction2.setText("A kto Cię Kocha? :*");
-                    break;
-                case 4:
-                    lShowReaction1.setText("Za taki Pysio należy się buziol :*");
-                    lShowReaction2.setText("śliczna jesteś, wiesz? :*");
-                    break;
-                case 5:
-                    lShowReaction1.setText("Tak jak Twoja matura która będzie na pięć :*");
-                    lShowReaction2.setText("Ucz się Słońce :*");
-                    break;
-                case 6:
-                    lShowReaction1.setText("Sześć Aniutkowi trzeba oddać cześć! ");
-                    lShowReaction2.setText("Kochanie Jesteś Królewną Chwała! :*");
-                    break;
-                case 7:
-                    lShowReaction1.setText("Szczęśliwa siódemka to dzisiaj Twoja number :*");
-                    lShowReaction2.setText("Zawsze jestem przy Tobie :*");
-                    break;
-                case 8:
-                    lShowReaction1.setText("Osiem to stojąca cyfra nieskończoności,");
-                    lShowReaction2.setText("coś się kończy, coś się zaczyna a nasza miłość jest nieśmiertelna :*");
-                    break;
-                case 9:
-                    lShowReaction1.setText("Dziewiątka to symbol odrodzenia i podróży, ");
-                    lShowReaction2.setText("dzisiaj musisz koniecznie wyjść z domku :*");
-                    break;
-                case 10:
-                    lShowReaction1.setText("10 jest jak 2 tylko po binarnemu... :D");
-                    lShowReaction2.setText("Do nauki! Albo Polibuda nas zje...");
-            }
+        lShowReaction0.setText("Twoja cyferka na dziś to: " + " " + Integer.toString(number));
+        buttonActivator.setVisible(false);
+        switch (number) {
+            case 0:
+                lShowReaction1.setText("Bo tyle będzie dzisiaj zmartwień :*");
+                lShowReaction2.setText("Uśmiechnij się Pysiu :*");
+                break;
+            case 1:
+                lShowReaction1.setText("1# bo jesteś number one :*");
+                lShowReaction2.setText("Pingwinek Cię Kocha :*");
+                break;
+            case 2:
+                lShowReaction1.setText("Cyferka dwa tak jak Ty i ja :*");
+                lShowReaction2.setText("Tuluu! :*");
+                break;
+            case 3:
+                lShowReaction1.setText("Cyferka trzy, Koteczka szukasz Tyyy :*");
+                lShowReaction2.setText("A kto Cię Kocha? :*");
+                break;
+            case 4:
+                lShowReaction1.setText("Za taki Pysio należy się buziol :*");
+                lShowReaction2.setText("śliczna jesteś, wiesz? :*");
+                break;
+            case 5:
+                lShowReaction1.setText("Tak jak Twoja matura która będzie na pięć :*");
+                lShowReaction2.setText("Ucz się Słońce :*");
+                break;
+            case 6:
+                lShowReaction1.setText("Sześć Aniutkowi trzeba oddać cześć! ");
+                lShowReaction2.setText("Kochanie Jesteś Królewną Chwała! :*");
+                break;
+            case 7:
+                lShowReaction1.setText("Szczęśliwa siódemka to dzisiaj Twoja number :*");
+                lShowReaction2.setText("Zawsze jestem przy Tobie :*");
+                break;
+            case 8:
+                lShowReaction1.setText("Osiem to stojąca cyfra nieskończoności,");
+                lShowReaction2.setText("coś się kończy, coś się zaczyna a nasza miłość jest nieśmiertelna :*");
+                break;
+            case 9:
+                lShowReaction1.setText("Dziewiątka to symbol odrodzenia i podróży, ");
+                lShowReaction2.setText("dzisiaj musisz koniecznie wyjść z domku :*");
+                break;
+            case 10:
+                lShowReaction1.setText("10 jest jak 2 tylko po binarnemu... :D");
+                lShowReaction2.setText("Do nauki! Albo Polibuda nas zje...");
+        }
         return null;
     }
-
-
 }
 
 
