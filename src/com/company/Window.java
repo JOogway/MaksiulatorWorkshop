@@ -578,7 +578,7 @@ public class Window extends JFrame {
             for(int i= 0 ;i<=listaRybna.size();i++){
                 if (Objects.equals(listaRybna.get(i), "title")) {
                     listaRybna.remove("title");
-                    listaRybna.get(i).re
+                    listaRybna.get(i).
                 }
             }
         } else if (index == 1) {
